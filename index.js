@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = "mongodb+srv://Smart-to-do:qVePR7Oya84zRV4q@cluster0.jdke4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.jdke4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -32,7 +33,13 @@ async function run() {
       res.send(result)
     })
 
-    
+    // Single Get Method
+    app.get('/todosUpdate/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await usersCollection.findOne(query);
+      res.send(result)
+    })
     
     // Post Method 
     app.post('/todos', async(req, res) =>{
@@ -42,7 +49,20 @@ async function run() {
       res.send(result)
     })
 
-    
+    app.put('/todosUpdate/:id', async(req,res) =>{
+      const id = req.params.id;
+      const updatedUser = req.body;
+      console.log("Updated User", updatedUser);
+      const filter = {_id : new ObjectId(id)};
+      const options = {upsert : true};
+      const updateUser = {
+        $set: {
+          name: updatedUser.todo
+        }
+      }
+      const result = await usersCollection.updateOne(filter, updateUser, options);
+      res.send(result)
+    })
 
     // Delete Method
     app.delete('/todos/:id', async(req, res) =>{
