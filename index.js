@@ -4,7 +4,12 @@ const port = process.env.PORT || 5000;
 const cors = require('cors');
 require('dotenv').config();
 
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:5174','https://fastidious-cendol-3d01c9.netlify.app'],
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
 app.use(express.json());
 
 
@@ -57,7 +62,7 @@ async function run() {
       const options = {upsert : true};
       const updateUser = {
         $set: {
-          name: updatedUser.todo
+          todo: updatedUser.todo
         }
       }
       const result = await usersCollection.updateOne(filter, updateUser, options);
