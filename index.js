@@ -73,6 +73,12 @@ async function run() {
       res.send(result)
     })
 
+    // Delete All
+    app.delete('/todos', async(req, res) =>{
+      const result = await usersCollection.deleteMany({});
+      res.send(result)
+    })
+
   } finally {
 
   }
